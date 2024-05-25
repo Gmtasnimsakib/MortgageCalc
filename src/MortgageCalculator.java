@@ -2,7 +2,7 @@ import java.text.NumberFormat;
 import java.util.Scanner;
 import java.util.Locale;
 
-public class Main {
+public class MortgageCalculator {
     public static void main(String[] args) {
 //        making it Constants because I don't want any magic numbers in this code
         final byte MONTHS_IN_YEAR = 12;
