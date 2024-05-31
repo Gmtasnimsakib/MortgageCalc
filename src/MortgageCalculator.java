@@ -2,6 +2,9 @@ import java.text.NumberFormat;
 import java.util.Scanner;
 
 public class MortgageCalculator {
+    final static byte MONTHS_IN_YEAR = 12;
+    final static byte PERCENT = 100;
+
     public static void main(String[] args) {
         int principal;
         float annualInterest;
@@ -11,10 +14,20 @@ public class MortgageCalculator {
         annualInterest = (float) readNumber("Annual Interest Rate: ", 1, 30);
         years = (byte) readNumber("Period (Years): ", 1, 30);
 
-        double mortgage = mortgageCalculator(principal, annualInterest, years);
-
+        double mortgage = calculateMortgage(principal, annualInterest, years);
         String mortgageFormatted = NumberFormat.getCurrencyInstance().format(mortgage);
-        System.out.println("Mortgage: " + mortgageFormatted);
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.println("Monthly Payments: " + mortgageFormatted);
+
+        System.out.println();
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for (short month = 1; month <= years * MONTHS_IN_YEAR; month++) {
+            double balance = calculateBalance(principal, annualInterest, years, month);
+            System.out.println(NumberFormat.getCurrencyInstance().format(balance));
+        }
     }
 
     public static double readNumber(String promt, int min, int max) {
@@ -30,17 +43,28 @@ public class MortgageCalculator {
         return value;
     }
 
-    public static double mortgageCalculator(int principal,
-                                            float annualInterest,
-                                            byte years) {
-        final byte MONTHS_IN_YEAR = 12;
-        final byte PERCENT = 100;
+    public static double calculateBalance(int principal,
+                                          float annualInterest,
+                                          byte years,
+                                          short numberOfPaymentsMade) {
 
-        short numberOfPayment = (short) (years * MONTHS_IN_YEAR);
         float monthlyInterest = annualInterest / MONTHS_IN_YEAR / PERCENT;
+        short numberOfPayments = (short) (years * MONTHS_IN_YEAR);
 
-        double mortgage = principal * (monthlyInterest * Math.pow((1 + monthlyInterest), numberOfPayment))
-                / (Math.pow((1 + monthlyInterest), numberOfPayment) - 1);
+        double balance = principal * (Math.pow(1 + monthlyInterest, numberOfPayments) - Math.pow(1 + monthlyInterest, numberOfPaymentsMade))
+                / (Math.pow(1 + monthlyInterest, numberOfPayments) - 1);
+        return balance;
+    }
+
+    public static double calculateMortgage(int principal,
+                                           float annualInterest,
+                                           byte years) {
+
+        float monthlyInterest = annualInterest / MONTHS_IN_YEAR / PERCENT;
+        short numberOfPayments = (short) (years * MONTHS_IN_YEAR);
+
+        double mortgage = principal * (monthlyInterest * Math.pow(1 + monthlyInterest, numberOfPayments))
+                / (Math.pow(1 + monthlyInterest, numberOfPayments) - 1);
         return mortgage;
     }
 }
